@@ -1,1 +1,66 @@
-
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVODA DEX</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .loader {
+      border: 8px solid #2c2c2c;
+      border-top: 8px solid #00ffd5;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loading-screen {
+      text-align: center;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .title {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #00ffd5;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-screen">
+    <div class="loader"></div>
+    <div class="title">Launching AVODA DEX...</div>
+    <div class="subtitle">Securing decentralized finance for Myanmar and beyond</div>
+  </div>  <script>
+    // Simulate loading time before navigating to dashboard (replace later)
+    setTimeout(() => {
+      window.location.href = "dashboard.html"; // This file doesn't exist yet
+    }, 3000);
+  </script></body>
+  </html>
