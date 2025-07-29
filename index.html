@@ -62,5 +62,13 @@
     setTimeout(() => {
       window.location.href = "dashboard.html"; // This file doesn't exist yet
     }, 3000);
-  </script></body>
+  </script>
+<nav class="navbar">
+  <button onclick="loadWallet()">Wallet</button>
+  <button onclick="loadDex()">DEX</button>
+  <button onclick="loadFutures()">Futures</button>
+</nav>
+
+<div id="main"></div>
+</body>
   </html>
