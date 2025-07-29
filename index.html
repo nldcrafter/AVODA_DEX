@@ -3,287 +3,252 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Avoda Wallet 🌿</title>
-<!-- Ethers.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
-<!-- QRCode.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+<title>AVODA DEX 🌿</title>
 <style>
-  /* Reset */
-  *, *::before, *::after { box-sizing: border-box; }
+  /* Reset & base */
+  *, *::before, *::after {box-sizing: border-box;}
   body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin:0; padding:0; height:100%;
     background: linear-gradient(135deg, #051620 0%, #003b31 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #c1dede;
     display: flex; justify-content: center; align-items: center;
   }
-
   #app {
-    width: 400px; max-width: 95vw;
+    width: 420px;
+    max-width: 95vw;
     background: #002922;
-    border-radius: 24px;
-    padding: 30px;
-    box-shadow: 0 0 50px #00ff7faa;
-    display: flex; flex-direction: column;
+    border-radius: 28px;
+    padding: 30px 30px 40px 30px;
+    box-shadow: 0 0 70px #00ff7fbb;
+    display: flex;
+    flex-direction: column;
     user-select: none;
+    overflow: hidden;
   }
-
   h1 {
-    text-align: center;
     color: #00ff7f;
+    text-align: center;
     font-weight: 900;
     letter-spacing: 3px;
-    font-size: 2rem;
-    margin-bottom: 25px;
-    text-shadow: 0 0 12px #00ff7fbb;
+    font-size: 2.4rem;
+    margin: 0 0 28px 0;
+    text-shadow: 0 0 18px #00ff7fdd;
   }
 
-  /* Screens */
-  .screen {
-    display: none;
-    animation: fadeInUp 0.5s ease forwards;
-  }
-  .screen.active {
-    display: block;
-  }
-  @keyframes fadeInUp {
-    0% {opacity: 0; transform: translateY(20px);}
-    100% {opacity: 1; transform: translateY(0);}
-  }
-
-  /* Buttons */
-  button {
-    background: #00ff7f;
-    border: none;
-    color: #00331a;
-    font-weight: 700;
-    font-size: 1.15rem;
-    padding: 14px 22px;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    width: 100%;
-    margin-top: 15px;
-    box-shadow: 0 0 25px #00ff7faa;
-  }
-  button:hover:not(:disabled) {
-    background: #00cc66;
-    box-shadow: 0 0 40px #00ff7fff;
-  }
-  button:disabled {
-    background: #004422;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-
-  /* Inputs */
-  input[type="text"], textarea, select {
-    width: 100%;
-    padding: 12px 15px;
-    border-radius: 16px;
-    border: none;
-    background: #00442f;
-    color: #00ff7f;
-    font-size: 1rem;
-    outline: none;
-    box-shadow: inset 0 0 10px #00ff7f88;
-    transition: box-shadow 0.3s ease;
-    resize: none;
-  }
-  input::placeholder, textarea::placeholder {
-    color: #007744cc;
-  }
-  input:focus, textarea:focus {
-    box-shadow: 0 0 25px #00ff7fff inset;
-  }
-  select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3csvg fill='none' stroke='%2300ff7f' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 18px center;
-    background-size: 18px 18px;
-  }
-
-  /* Wallet info */
-  #walletAddress, #walletBalance {
-    background: #003322cc;
-    padding: 14px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 18px;
-    font-size: 0.95rem;
-    word-break: break-word;
-    user-select: text;
-    box-shadow: 0 0 25px #00ff7f88;
-  }
-  #walletBalance {
-    font-size: 1.3rem;
-    color: #00ff7f;
-  }
-
-  /* QR code */
-  #qrcode {
-    margin: 30px auto 20px auto;
-    width: 160px;
-    height: 160px;
-    background: #002211;
-    border-radius: 26px;
-    box-shadow: 0 0 35px #00ff7faa inset;
-  }
-
-  /* Transaction history */
-  #txHistory {
-    margin-top: 25px;
-    max-height: 170px;
-    overflow-y: auto;
-    background: #003b20;
-    border-radius: 20px;
-    padding: 15px 18px;
-    box-shadow: inset 0 0 20px #00ff7faa;
-    font-size: 0.95rem;
-    list-style: none;
-  }
-  #txHistory li {
-    margin-bottom: 12px;
-    color: #a0f5a0;
-    font-family: monospace;
-    word-break: break-word;
-  }
-
-  /* Form labels */
-  label {
-    display: block;
-    font-weight: 700;
-    margin-top: 15px;
-    margin-bottom: 8px;
-    font-size: 1rem;
-  }
-
-  /* Loading screen */
+  /* Loading Screen */
   #loadingScreen {
+    position: absolute;
+    inset:0;
+    background: #001814;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 300px;
     color: #00ff7f;
     font-weight: 700;
-    font-size: 1.3rem;
-    letter-spacing: 2px;
-    text-shadow: 0 0 15px #00ff7fbb;
+    font-size: 1.5rem;
+    z-index: 1000;
+    animation: fadeOut 0.7s ease forwards;
+    animation-delay: 1.8s;
   }
-
+  #loadingScreen.hidden {
+    display: none;
+  }
   .loader {
-    border: 5px solid #004d3322;
-    border-top: 5px solid #00ff7f;
+    margin-top: 20px;
+    border: 4px solid #004d3322;
+    border-top: 4px solid #00ff7f;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1.2s linear infinite;
-    margin: 20px 0 0 0;
+    width: 46px;
+    height: 46px;
+    animation: spin 1.1s linear infinite;
   }
   @keyframes spin {
     0% {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}
   }
-
-  /* Navigation link style */
-  .navLink {
-    margin-top: 22px;
-    text-align: center;
-    color: #00ff7fcc;
-    cursor: pointer;
-    font-weight: 700;
-    text-decoration: underline;
-    user-select: none;
+  @keyframes fadeOut {
+    to {opacity: 0; visibility: hidden;}
   }
-  .navLink:hover {
-    color: #00cc66;
+
+  /* Network selector */
+  label {
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: block;
+    color: #00ff7fcc;
+  }
+  select {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 20px;
+    border: none;
+    background: #00442f;
+    color: #00ff7f;
+    font-size: 1.1rem;
+    outline: none;
+    box-shadow: inset 0 0 18px #00ff7f99;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg fill='none' stroke='%2300ff7f' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 18px 18px;
+  }
+  select:hover {
+    box-shadow: inset 0 0 25px #00ff7fff;
+  }
+
+  /* Swap container */
+  #swapContainer {
+    margin-top: 28px;
+    background: #003b28;
+    border-radius: 24px;
+    padding: 25px 22px 30px 22px;
+    box-shadow: inset 0 0 40px #00ff7faa;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .token-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .token-label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #00ff7fcc;
+  }
+  .token-select, .token-amount {
+    background: #00442f;
+    border-radius: 20px;
+    border: none;
+    padding: 12px 16px;
+    font-size: 1.1rem;
+    color: #00ff7f;
+    box-shadow: inset 0 0 18px #00ff7f99;
+    outline: none;
+  }
+  .token-select {
+    width: 50%;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg fill='none' stroke='%2300ff7f' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+  }
+  .token-amount {
+    width: 45%;
+    text-align: right;
+  }
+
+  /* Swap button */
+  #btnSwap {
+    margin-top: 12px;
+    background: #00ff7f;
+    color: #00331a;
+    font-weight: 800;
+    font-size: 1.3rem;
+    padding: 16px 0;
+    border-radius: 24px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 35px #00ff7fff;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  #btnSwap:hover:not(:disabled) {
+    background: #00cc66;
+    box-shadow: 0 0 55px #00ff7fff;
+  }
+  #btnSwap:disabled {
+    background: #004422;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Balances display */
+  #balances {
+    margin-top: 18px;
+    background: #002f21;
+    border-radius: 20px;
+    padding: 15px 20px;
+    box-shadow: inset 0 0 30px #00ff7f77;
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: #a0f5a0;
   }
 
   /* Responsive */
-  @media (max-width: 450px) {
+  @media (max-width: 480px) {
     #app {
       width: 100vw;
       height: 100vh;
       border-radius: 0;
       padding: 20px;
       box-shadow: none;
+      justify-content: flex-start;
+      overflow-y: auto;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 18px;
+    }
+    #swapContainer {
+      padding: 18px 15px 22px 15px;
+      gap: 16px;
+    }
+    .token-select, .token-amount {
+      font-size: 1rem;
+    }
+    #btnSwap {
+      font-size: 1.15rem;
+      padding: 14px 0;
     }
   }
 </style>
 </head>
 <body>
+  <div id="app" role="main" aria-live="polite" aria-label="Avoda Decentralized Exchange Application">
 
-<div id="app" role="main" aria-live="polite" aria-label="Avoda Wallet Application">
+    <h1>AVODA DEX 🌿</h1>
 
-  <h1>AVODA WALLET 🌿</h1>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" aria-live="assertive" aria-busy="true">
+      Loading DEX data...
+      <div class="loader"></div>
+    </div>
 
-  <!-- Loading Screen -->
-  <section id="loadingScreen" class="screen active" aria-label="Loading wallet data">
-    <div>Loading wallet data...</div>
-    <div class="loader"></div>
-  </section>
-
-  <!-- Home Screen -->
-  <section id="homeScreen" class="screen" aria-label="Wallet Home Screen">
-    <button id="btnCreateWallet">🆕 Create Wallet</button>
-    <button id="btnImportWallet">📥 Import Wallet</button>
-  </section>
-
-  <!-- Create Wallet Screen -->
-  <section id="createScreen" class="screen" aria-label="Create Wallet Screen">
-    <button class="navLink" id="btnBackFromCreate">⬅ Back</button>
-    <button id="btnGenerateWallet" style="margin-top:20px;">Generate New Wallet</button>
-    <textarea id="newPrivateKey" rows="4" readonly
-      style="margin-top:15px; font-family: monospace; font-size:1rem; background:#001f0f; color:#00ff7f; border-radius:14px; padding:12px;"></textarea>
-    <button id="btnSaveCreatedWallet" style="margin-top:15px;" disabled>Save Wallet</button>
-  </section>
-
-  <!-- Import Wallet Screen -->
-  <section id="importScreen" class="screen" aria-label="Import Wallet Screen">
-    <button class="navLink" id="btnBackFromImport">⬅ Back</button>
-    <label for="inputPrivateKey">Paste your Private Key</label>
-    <textarea id="inputPrivateKey" rows="4" placeholder="0x..." spellcheck="false" autocomplete="off"
-      style="background:#001f0f; color:#00ff7f; border-radius:14px; padding:12px;"></textarea>
-    <button id="btnImportWalletConfirm" style="margin-top:15px;">Import Wallet</button>
-  </section>
-
-  <!-- Wallet Dashboard Screen -->
-  <section id="dashboardScreen" class="screen" aria-label="Wallet Dashboard Screen">
-    <button class="navLink" id="btnLogout">⬅ Logout</button>
-
-    <label for="selectNetwork">Select Network</label>
-    <select id="selectNetwork" aria-label="Select blockchain network">
-      <option value="https://mainnet.infura.io/v3/your_infura_id">Ethereum Mainnet</option>
-      <option value="https://sepolia.infura.io/v3/your_infura_id">Sepolia Testnet</option>
-      <option value="https://polygon-rpc.com">Polygon</option>
-      <option value="https://bsc-dataseed.binance.org/">Binance Smart Chain</option>
-      <option value="avoda">Avoda Chain (Fake)</option>
+    <!-- Network Selection -->
+    <label for="networkSelect">Select Network</label>
+    <select id="networkSelect" aria-label="Select blockchain network">
+      <option value="ethereum">Ethereum Mainnet</option>
+      <option value="bsc">Binance Smart Chain</option>
+      <option value="polygon">Polygon</option>
+      <option value="avoda">Avoda Chain (Test)</option>
     </select>
 
-    <div id="walletAddress" aria-live="polite" aria-atomic="true" style="margin-top: 20px;">Address: --</div>
-    <div id="walletBalance" aria-live="polite" aria-atomic="true">Balance: --</div>
+    <!-- Swap Container -->
+    <section id="swapContainer" aria-label="Token swap interface">
+      <div class="token-row">
+        <label for="fromToken" class="token-label">From</label>
+        <select id="fromToken" class="token-select" aria-label="Select token to swap from"></select>
+        <input type="number" id="fromAmount" class="token-amount" aria-label="Amount to swap from" min="0" step="any" placeholder="0.0" />
+      </div>
 
-    <div id="qrcode" role="img" aria-label="QR code of wallet address"></div>
+      <div class="token-row">
+        <label for="toToken" class="token-label">To</label>
+        <select id="toToken" class="token-select" aria-label="Select token to swap to"></select>
+        <input type="number" id="toAmount" class="token-amount" aria-label="Amount to swap to" min="0" step="any" placeholder="0.0" disabled />
+      </div>
 
-    <form id="sendForm" aria-label="Send Ether form" novalidate>
-      <label for="inputToAddress">Send To Address</label>
-      <input type="text" id="inputToAddress" placeholder="0x..." required autocomplete="off" spellcheck="false" />
-      <label for="inputAmount">Amount (ETH)</label>
-      <input type="number" id="inputAmount" step="0.0001" min="0.0001" placeholder="0.0" required />
-      <button type="submit" id="btnSendTx">📤 Send Transaction</button>
-    </form>
+      <button id="btnSwap" aria-live="polite" aria-atomic="true" disabled>Swap Tokens</button>
 
-    <ul id="txHistory" aria-live="polite" aria-atomic="true"></ul>
-  </section>
-
-</div>
+      <div id="balances" aria-live="polite" aria-atomic="true"></div>
+    </section>
+  </div>
 
 <script>
 (() => {
@@ -291,265 +256,159 @@
 
   // Elements
   const loadingScreen = document.getElementById('loadingScreen');
-  const homeScreen = document.getElementById('homeScreen');
-  const createScreen = document.getElementById('createScreen');
-  const importScreen = document.getElementById('importScreen');
-  const dashboardScreen = document.getElementById('dashboardScreen');
+  const networkSelect = document.getElementById('networkSelect');
+  const fromTokenSelect = document.getElementById('fromToken');
+  const toTokenSelect = document.getElementById('toToken');
+  const fromAmountInput = document.getElementById('fromAmount');
+  const toAmountInput = document.getElementById('toAmount');
+  const btnSwap = document.getElementById('btnSwap');
+  const balancesDiv = document.getElementById('balances');
 
-  const btnCreateWallet = document.getElementById('btnCreateWallet');
-  const btnImportWallet = document.getElementById('btnImportWallet');
-  const btnBackFromCreate = document.getElementById('btnBackFromCreate');
-  const btnBackFromImport = document.getElementById('btnBackFromImport');
+  // Mock tokens per network
+  const tokens = {
+    ethereum: [
+      { symbol: 'ETH', name: 'Ethereum', decimals: 18 },
+      { symbol: 'USDT', name: 'Tether USD', decimals: 6 },
+      { symbol: 'DAI', name: 'Dai Stablecoin', decimals: 18 },
+    ],
+    bsc: [
+      { symbol: 'BNB', name: 'Binance Coin', decimals: 18 },
+      { symbol: 'BUSD', name: 'Binance USD', decimals: 18 },
+      { symbol: 'CAKE', name: 'PancakeSwap Token', decimals: 18 },
+    ],
+    polygon: [
+      { symbol: 'MATIC', name: 'Polygon', decimals: 18 },
+      { symbol: 'USDC', name: 'USD Coin', decimals: 6 },
+      { symbol: 'QUICK', name: 'QuickSwap Token', decimals: 18 },
+    ],
+    avoda: [
+      { symbol: 'AVD', name: 'Avoda Token', decimals: 18 },
+      { symbol: 'AVUSD', name: 'Avoda USD', decimals: 6 },
+    ],
+  };
 
-  const btnGenerateWallet = document.getElementById('btnGenerateWallet');
-  const newPrivateKey = document.getElementById('newPrivateKey');
-  const btnSaveCreatedWallet = document.getElementById('btnSaveCreatedWallet');
+  // Mock user balances (random for demo)
+  let userBalances = {};
 
-  const inputPrivateKey = document.getElementById('inputPrivateKey');
-  const btnImportWalletConfirm = document.getElementById('btnImportWalletConfirm');
-
-  const btnLogout = document.getElementById('btnLogout');
-  const selectNetwork = document.getElementById('selectNetwork');
-  const walletAddress = document.getElementById('walletAddress');
-  const walletBalance = document.getElementById('walletBalance');
-  const qrcodeContainer = document.getElementById('qrcode');
-
-  const sendForm = document.getElementById('sendForm');
-  const inputToAddress = document.getElementById('inputToAddress');
-  const inputAmount = document.getElementById('inputAmount');
-  const txHistoryList = document.getElementById('txHistory');
-
-  // State
-  let wallet = null;
-  let provider = null;
-  let txHistory = [];
-
-  // Utility: show only one screen
-  function showScreen(screen) {
-    [loadingScreen, homeScreen, createScreen, importScreen, dashboardScreen].forEach(s => s.classList.remove('active'));
-    screen.classList.add('active');
+  function randomBalance() {
+    return (Math.random() * 10).toFixed(4);
   }
 
-  // Save wallet to localStorage
-  function saveWallet(pk) {
-    localStorage.setItem('avoda_wallet_pk', pk);
-  }
+  // Populate tokens for selected network
+  function populateTokens(network) {
+    fromTokenSelect.innerHTML = '';
+    toTokenSelect.innerHTML = '';
+    tokens[network].forEach(token => {
+      const option1 = document.createElement('option');
+      option1.value = token.symbol;
+      option1.textContent = `${token.symbol} - ${token.name}`;
+      fromTokenSelect.appendChild(option1);
 
-  // Load wallet from localStorage
-  function loadWallet() {
-    const pk = localStorage.getItem('avoda_wallet_pk');
-    if (pk) {
-      try {
-        wallet = new ethers.Wallet(pk);
-        showScreen(dashboardScreen);
-        setupProvider();
-        updateUI();
-      } catch {
-        alert('Stored private key invalid. Please create/import wallet again.');
-        localStorage.removeItem('avoda_wallet_pk');
-        showScreen(homeScreen);
-      }
-    } else {
-      showScreen(homeScreen);
-    }
-  }
-
-  // Setup provider based on selected network
-  function setupProvider() {
-    const networkUrl = selectNetwork.value;
-    if (networkUrl === 'avoda') {
-      // Mock provider for Avoda Chain (since it's a fake/test network here)
-      provider = {
-        getBalance: async () => ethers.parseEther("1000.0"), // mock 1000 AVODA balance
-        getTransactionCount: async () => 0,
-        sendTransaction: async (tx) => {
-          // mock sending, resolve after delay
-          return new Promise((resolve) => {
-            setTimeout(() => resolve({ hash: '0xmockedtxhash' + Date.now() }), 1500);
-          });
-        },
-        waitForTransaction: async () => new Promise(r => setTimeout(r, 3000)),
-      };
-    } else {
-      provider = new ethers.JsonRpcProvider(networkUrl);
-    }
-  }
-
-  // Update UI info (address, balance, QR, tx history)
-  async function updateUI() {
-    if (!wallet || !provider) return;
-
-    walletAddress.textContent = `Address: ${wallet.address}`;
-    // Generate QR code
-    qrcodeContainer.innerHTML = '';
-    new QRCode(qrcodeContainer, {
-      text: wallet.address,
-      width: 160,
-      height: 160,
-      colorDark: "#00ff7f",
-      colorLight: "#002211",
-      correctLevel: QRCode.CorrectLevel.H,
+      const option2 = document.createElement('option');
+      option2.value = token.symbol;
+      option2.textContent = `${token.symbol} - ${token.name}`;
+      toTokenSelect.appendChild(option2);
     });
 
-    // Fetch balance
-    try {
-      const balanceBigInt = await provider.getBalance(wallet.address);
-      const balanceEth = ethers.formatEther(balanceBigInt);
-      walletBalance.textContent = `Balance: ${parseFloat(balanceEth).toFixed(4)} ETH`;
-    } catch (e) {
-      walletBalance.textContent = 'Balance: --';
-    }
+    // Default selections
+    fromTokenSelect.selectedIndex = 0;
+    toTokenSelect.selectedIndex = 1 % tokens[network].length;
 
-    // Show tx history (mocked for now)
-    renderTxHistory();
+    // Reset amounts and enable input
+    fromAmountInput.value = '';
+    toAmountInput.value = '';
+    toAmountInput.disabled = true;
+    btnSwap.disabled = true;
   }
 
-  // Render transaction history list
-  function renderTxHistory() {
-    txHistoryList.innerHTML = '';
-    if (txHistory.length === 0) {
-      const li = document.createElement('li');
-      li.textContent = 'No transactions yet.';
-      txHistoryList.appendChild(li);
-      return;
-    }
-    txHistory.slice().reverse().forEach(tx => {
-      const li = document.createElement('li');
-      li.textContent = `To: ${tx.to} | Amount: ${tx.amount} ETH | TxHash: ${tx.hash}`;
-      txHistoryList.appendChild(li);
-    });
+  // Display user balances for current network tokens
+  function displayBalances(network) {
+    const list = tokens[network].map(t => {
+      return `${t.symbol}: ${userBalances[t.symbol] || '0.0000'}`;
+    }).join(' | ');
+    balancesDiv.textContent = `Balances — ${list}`;
   }
 
-  // Event listeners
+  // Mock price fetch and swap calculation
+  function getMockPrice(fromSymbol, toSymbol) {
+    // For simplicity: random price 0.5 - 2
+    return (0.5 + Math.random() * 1.5).toFixed(4);
+  }
+// Calculate swap output amount based on mock price
+function calculateToAmount() {
+  const fromSymbol = fromTokenSelect.value;
+  const toSymbol = toTokenSelect.value;
+  const fromAmount = parseFloat(fromAmountInput.value);
+  if (isNaN(fromAmount) || fromAmount <= 0) {
+    toAmountInput.value = '';
+    btnSwap.disabled = true;
+    return;
+  }
 
-  // Create Wallet
-  btnGenerateWallet.onclick = () => {
-    const newWallet = ethers.Wallet.createRandom();
-    newPrivateKey.value = newWallet.privateKey;
-    btnSaveCreatedWallet.disabled = false;
-  };
+  if (fromSymbol === toSymbol) {
+    toAmountInput.value = fromAmount.toFixed(4);
+    btnSwap.disabled = false;
+    return;
+  }
 
-  // Save created wallet
-  btnSaveCreatedWallet.onclick = () => {
-    const pk = newPrivateKey.value.trim();
-    if (!pk.startsWith('0x') || pk.length !== 66) {
-      alert('Invalid private key generated!');
-      return;
-    }
-    wallet = new ethers.Wallet(pk);
-    saveWallet(pk);
-    setupProvider();
-    updateUI();
-    showScreen(dashboardScreen);
-  };
-
-  // Import Wallet
-  btnImportWalletConfirm.onclick = () => {
-    const pk = inputPrivateKey.value.trim();
-    if (!pk.startsWith('0x') || pk.length !== 66) {
-      alert('Invalid private key!');
-      return;
-    }
-    try {
-      wallet = new ethers.Wallet(pk);
-      saveWallet(pk);
-      setupProvider();
-      updateUI();
-      showScreen(dashboardScreen);
-    } catch {
-      alert('Failed to import wallet. Check private key.');
-    }
-  };
-
-  // Logout
-  btnLogout.onclick = () => {
-    wallet = null;
-    provider = null;
-    localStorage.removeItem('avoda_wallet_pk');
-    txHistory = [];
-    showScreen(homeScreen);
-  };
-
-  // Network change
-  selectNetwork.onchange = async () => {
-    if (!wallet) return;
-    setupProvider();
-    await updateUI();
-  };
-
-  // Send transaction (mock or real depending on network)
-  sendForm.onsubmit = async (e) => {
-    e.preventDefault();
-    if (!wallet || !provider) {
-      alert('Wallet not connected.');
-      return;
-    }
-
-    const to = inputToAddress.value.trim();
-    const amountStr = inputAmount.value.trim();
-    if (!to || !ethers.isAddress(to)) {
-      alert('Invalid recipient address.');
-      return;
-    }
-    if (!amountStr || isNaN(amountStr) || Number(amountStr) <= 0) {
-      alert('Invalid amount.');
-      return;
-    }
-
-    const amount = ethers.parseEther(amountStr);
-
-    try {
-      btnSendTx.disabled = true;
-      btnSendTx.textContent = 'Sending...';
-
-      const tx = {
-        to,
-        value: amount,
-        // gasLimit and gasPrice can be auto
-      };
-
-      let txResponse;
-      if (selectNetwork.value === 'avoda') {
-        // Mock send for Avoda chain
-        txResponse = await provider.sendTransaction(tx);
-      } else {
-        txResponse = await wallet.connect(provider).sendTransaction(tx);
+  const price = parseFloat(getMockPrice(fromSymbol, toSymbol));
+  const toAmount = fromAmount * price;
+  toAmountInput.value = toAmount.toFixed(4);
+  btnSwap.disabled = false;
       }
-      txHistory.push({ to, amount: amountStr, hash: txResponse.hash });
-      renderTxHistory();
-
-      await provider.waitForTransaction(txResponse.hash);
-      alert('Transaction confirmed!');
-
-      inputToAddress.value = '';
-      inputAmount.value = '';
-      await updateUI();
-    } catch (err) {
-      alert('Transaction failed: ' + err.message);
-    } finally {
-      btnSendTx.disabled = false;
-      btnSendTx.textContent = '📤 Send Transaction';
-    }
+  // Mock prices for token pairs
+function getMockPrice(from, to) {
+  // Example fixed mock prices, you can customize or fetch real prices later
+  const prices = {
+    'ETH/AVD': 2000,
+    'AVD/ETH': 0.0005,
+    'ETH/USDT': 1800,
+    'USDT/ETH': 0.00055,
+    'AVD/USDT': 1,
+    'USDT/AVD': 1,
   };
+  return prices[`${from}/${to}`] || 1;
+}
 
-  // Navigation buttons
-  btnCreateWallet.onclick = () => showScreen(createScreen);
-  btnImportWallet.onclick = () => showScreen(importScreen);
-  btnBackFromCreate.onclick = () => showScreen(homeScreen);
-  btnBackFromImport.onclick = () => showScreen(homeScreen);
+// Handle swap button click
+btnSwap.onclick = () => {
+  const fromSymbol = fromTokenSelect.value;
+  const toSymbol = toTokenSelect.value;
+  const fromAmount = parseFloat(fromAmountInput.value);
+  const toAmount = parseFloat(toAmountInput.value);
 
-  // Initialize app
-  async function init() {
-    showScreen(loadingScreen);
-    // Simulate loading delay
-    await new Promise(r => setTimeout(r, 1200));
-    loadWallet();
+  if (isNaN(fromAmount) || fromAmount <= 0 || isNaN(toAmount) || toAmount <= 0) {
+    alert('Please enter valid amounts');
+    return;
   }
 
-  init();
+  if (fromSymbol === toSymbol) {
+    alert('Select different tokens to swap');
+    return;
+  }
 
-})();
-</script>
+  // Simulate swap execution
+  alert(`Swapped ${fromAmount.toFixed(4)} ${fromSymbol} for ${toAmount.toFixed(4)} ${toSymbol} (mock transaction)`);
 
+  // Clear inputs after swap
+  fromAmountInput.value = '';
+  toAmountInput.value = '';
+  btnSwap.disabled = true;
+};
+
+// Update output amount whenever input or tokens change
+fromAmountInput.addEventListener('input', calculateToAmount);
+fromTokenSelect.addEventListener('change', calculateToAmount);
+toTokenSelect.addEventListener('change', calculateToAmount);
+  // Initialize the app UI
+function init() {
+  setupProvider();
+  calculateToAmount();
+  showScreen('home');
+}
+
+// Call init on page load
+init();
+  </script>
 </body>
 </html>
