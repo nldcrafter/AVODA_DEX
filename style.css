@@ -31,3 +31,25 @@ button {
 button:hover {
   background: #00cc77;
 }
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.navbar button {
+  background: #222;
+  color: #00ff99;
+  border: 1px solid #00ff99;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.navbar button:hover {
+  background: #00ff99;
+  color: #000;
+}
